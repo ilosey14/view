@@ -113,13 +113,13 @@ These are given as a recommended, modular approach to separate your code into ma
 
 Here is the full page directory structure:
 
-| File                 |          | Description                                                                             |
-| -------------------- | -------- | --------------------------------------------------------------------------------------- |
-| `index.php`          |          | Page logic - `View` instance lives here.                                                |
-| `content.php|html`   |          | HTML body content with given MVC scope.                                                 |
-| `head.php|html`      | Optional | Document head resources                                                                 |
-| `libraries.php|html` | Optional | Any front-end libraries and their required content (These come after the page content). |
-| `scripts.php|html`   | Optional | Additional inline scripts at the end of the document.                                   |
+| File                  |          | Description                                                                             |
+| --------------------  | -------- | --------------------------------------------------------------------------------------- |
+| `index.php`           |          | Page logic - `View` instance lives here.                                                |
+| `content.php\|html`   |          | HTML body content with given MVC scope.                                                 |
+| `head.php\|html`      | Optional | Document head resources                                                                 |
+| `libraries.php\|html` | Optional | Any front-end libraries and their required content (These come after the page content). |
+| `scripts.php\|html`   | Optional | Additional inline scripts at the end of the document.                                   |
 
 Now, We need to modify some default templates to get this library customized for you project.
 
