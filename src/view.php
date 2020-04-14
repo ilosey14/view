@@ -30,8 +30,8 @@ class View {
 
     /**
      * Creates a new view object.
-     * @param string $title The page title
-     * @param string $dir The page directory.
+     * @param string $title The document title
+     * @param string $dir The page source directory
      * @return View
      */
     public function __construct(string $title, string $dir) {
@@ -55,9 +55,9 @@ class View {
     }
 
     /**
-     * Renders up to the page's body header (is specified).
+     * Renders up to the page's body header (if specified).
      * This is useful for returning immediate content to the user
-     * while database queries ane/or computation is taking place.
+     * while database queries ane/or computation are taking place.
      * @see https://stackoverflow.com/a/4192086/12588503
      */
     public function renderPageHeader(): void {
@@ -94,27 +94,36 @@ class View {
 
     /**
      * Include a component in a template by name.
+     * Components are globally available to any view and are restricted to the provided scope.
      * @param string $name The component name.
      * Its containing file should have the same name.
-     * @param array $scope
+     * @param array $scope The component's inherited variable scope
      */
     private function includeComponent(string $name, array $scope = null): void {
-        if ($scope)
-            extract($scope, EXTR_PREFIX_ALL, '');
+        if ($ext = self::getFileExt("$this->components/$name")) {
+            $__name = $name;
+            $__ext = $ext;
 
-        if ($ext = self::getFileExt("$this->components/$name"))
-            include "$this->components/$name.$ext";
+            if ($scope) extract($scope);
+
+            include "$this->components/$__name.$__ext";
+        }
     }
 
     /**
      * Require a page resource by name, if available.
-     * @param string $name The resource name.
+     * Resources are unique to a view directory and have access to the view template scope.
+     * @param string $name The resource name
      */
     private function requireResource(string $name): void {
-        extract($this->vars, EXTR_PREFIX_ALL, '');
+        if ($ext = self::getFileExt("$this->dir/$name")) {
+            $__name = $name;
+            $__ext = $ext;
 
-        if ($ext = self::getFileExt("$this->dir/$name"))
-            require_once "$this->dir/$name.$ext";
+            extract($this->vars);
+
+            require_once "$this->dir/$__name.$__ext";
+        }
     }
 
     /**

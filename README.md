@@ -57,13 +57,13 @@ $view->users = $results_from_database;
 ```
 
 Then build the page contents.
-All view variables are exposed to the model with a leading underscore.
+Here, all view variables are exposed to the model.
 
 ```html
 <div>
     <?php
-    if (count($_users)):
-        foreach ($_users as $user):
+    if (count($users)):
+        foreach ($users as $user):
     ?>
     <div class="user">
         <img src="<?=$user->thumbnail_url?>">
@@ -77,6 +77,8 @@ All view variables are exposed to the model with a leading underscore.
     <?php endif; ?>
 </div>
 ```
+
+*To improve upon this example, see [components](#components).*
 
 ### Flushing Headers and Content
 
@@ -133,7 +135,7 @@ Here are some suggested changes:
 - Include a footer
 - Anything else you'd like...
 
-Then, create your templates and/or components (see below) in the `templates` directory.
+Then, create your templates and/or [components](#components) in the `templates` directory.
 
 ### Advanced
 
@@ -184,17 +186,18 @@ For example, given the the file structure:
 
 we can create the following.
 
-```html
-// index.php
+`index.php`
+```php
 $view->item = $item_info_db_result;
-
-// content.php
+```
+`content.php`
+```html
 <div id="content">
     <div class="column">
         <?php $this->includeComponent('menu') ?>
     </div>
     <div class="column">
-        <?php $this->includeComponent('item-showcase', $_item) ?>
+        <?php $this->includeComponent('item-showcase', $item) ?>
     </div>
 </div>
 ```
