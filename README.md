@@ -21,7 +21,7 @@ Should I use this?
 Probably not.
 It *is* vanilla PHP, which could be desirable.
 Unless it's exactly what you need, some small library won't compare to the usability, functionality, or maintainability of something like a Symfony or Laravel-based project.
-However, as mentioned above, I believe this library is a great resource MVC site design.
+However, as mentioned above, I believe this library is a great resource for MVC site design.
 
 ---
 
@@ -39,7 +39,7 @@ In our `index` file, we create a new view instance for our page.
 Then render the page to the client.
 
 ```php
-require_once $_SERVER['DOCUMENT_ROOT'] . '/src/view.php';
+require_once '/var/www/src/View.php';
 $view = new View('Page Title', __DIR__);
 
 $view->render();
