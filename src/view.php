@@ -4,22 +4,24 @@
  *
  * Page directory structure (unique to each page):
  *
- * Required
- * index.php        page logic - `View` instance lives here
- * content.*        html body content with given MVC scope
- *
- * Optional
- * head.*           document head resources
- * libraries.*      any front-end libraries and their required content (these come after the page content)
- * scripts.*        additional inline scripts at the end of the document
+ * | Script | Description |
+ * |:-|:-|
+ * | *Required* |
+ * | `index.php`    | page logic - `View` instance lives here
+ * | `content.*`    | html body content with given MVC scope
+ * | *Optional* |
+ * | `head.*`       | document head resources
+ * | `libraries.*`  | any front-end libraries and their required content (these come after the page content)
+ * | `scripts.*`    | additional inline scripts at the end of the document
  *
  * @package View
  */
 class View {
-    private $shell = '/templates/shell.php';
-    private $components = '/templates/components';
+    private $components = 'templates/components';
+    private $scripts = 'public/src';
+    private $shell = 'templates/shell.php';
 
-    private $root = '';
+    private $root = '/var/www';
     private $dir = '';
     private $title = '';
 
@@ -35,10 +37,11 @@ class View {
      * @return View
      */
     public function __construct(string $title, string $dir) {
-        $this->root = $_SERVER['DOCUMENT_ROOT'] . '/test/view';
+        // $this->root = $_SERVER['DOCUMENT_ROOT'] . '/..';
 
-        $this->shell = "$this->root/$this->shell";
         $this->components = "$this->root/$this->components";
+        $this->scripts = "$this->root/$this->scripts";
+        $this->shell = "$this->root/$this->shell";
 
         $this->title = $title;
         $this->dir = $dir;
@@ -127,6 +130,55 @@ class View {
     }
 
     /**
+     * Embeds a JavaScript library into the markup.
+     *
+     * | Option | Type | Description |
+     * |-|-|-|
+     * | anonymous  | bool | Wrap script in anonymous function |
+     * | compressed | bool | Compress the script |
+     *
+     * @param string $name The script name
+     * @param array $vars Name-value pairs to pass to the script as embeded variables
+     * @param array $options
+     */
+    private function embedScript(string $name, array $vars = null, array $options = []): void {
+        $path = "$this->scripts/$name.js";
+        $anonymous = $options['anonymous'] ?? false;
+        $compress = $options['compressed'] ?? false;
+        $new_line = $compress ? '' : PHP_EOL;
+
+        if (!file_exists($path)) {
+            echo "<!-- script \"$name.js\" does not exist -->";
+            return;
+        }
+
+        echo '<script>', $new_line;
+
+        // anonymous
+        if ($anonymous)
+            echo '(function () {', $new_line;
+
+        // insert vars
+        if ($vars) {
+            foreach ($vars as $name => $value)
+                echo "var $name = ", json_encode($value), ';', $new_line;
+
+            echo $new_line;
+        }
+
+        // script contents
+        if ($compress)
+            echo self::compressScript($path);
+        else
+            echo file_get_contents($path), $new_line;
+
+        if ($anonymous)
+            echo '})();', $new_line;
+
+        echo '</script>';
+    }
+
+    /**
      * Set a template variable.
      * These are accessible in the page or template components.
      * @param string $name Variable name
@@ -153,5 +205,28 @@ class View {
     private static function getFileExt(string $filename) {
         $files = glob("$filename.*");
         return count($files) ? pathinfo($files[0], PATHINFO_EXTENSION) : null;
+    }
+
+    /**
+     * Removes comments and whitespace to compress script.
+     * Limitations: This is a quick, loose replace and does not preserve
+     * patterns inside string.
+     * @param string $path The script path
+     * @return string
+     */
+    private static function compressScript(string $path): string {
+        return preg_replace(
+            [
+                '/\/\/.*?\n/',
+                '/\/\*[\S\s\r\n]*?\*\//',
+                '/[\s\r\n]+/'
+            ],
+            [
+                '',
+                '',
+                ' '
+            ],
+            file_get_contents($path)
+        );
     }
 }
