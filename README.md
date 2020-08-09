@@ -204,6 +204,26 @@ $view->item = $item_info_db_result;
 
 ---
 
+## Static Site Generation
+
+Also included in this library is the `StaticView` class.
+Maintain your site's view model to create fast, static pages when possible.
+
+A simple way to generate pages is to have a script like the following in your server root.
+
+```bash
+#!/bin/bash
+if [[ $# < 2 ]]
+then
+    echo 'Usage: static_view <in_path> <out_path>'
+    exit
+fi
+
+php -r "require_once './src/StaticView.php'; StaticView::renderToFile('$1', '$2');"
+```
+
+---
+
 ## Get Started
 
 Clone this repo to your existing project root.
