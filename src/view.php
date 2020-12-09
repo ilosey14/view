@@ -132,23 +132,24 @@ class View {
     /**
      * Embeds a JavaScript library into the markup.
      *
-     * | Option | Type | Description |
-     * |-|-|-|
-     * | anonymous  | bool | Wrap script in anonymous function |
-     * | compressed | bool | Compress the script |
+     * | Flag | Description |
+     * |-|:-|
+     * | `anonymous` | Wrap script in anonymous function |
+     * | `compressed` | Compress the script |
+     * | `path` | Specify a script path relative to the server root for the `$name` |
      *
      * @param string $name The script name
-     * @param array $vars Name-value pairs to pass to the script as embeded variables
-     * @param array $options
+     * @param array $vars Name-value pairs to pass to the script as embedded variables
+     * @param array $flags
      */
-    private function embedScript(string $name, array $vars = null, array $options = []): void {
-        $path = "$this->scripts/$name.js";
-        $anonymous = $options['anonymous'] ?? false;
-        $compress = $options['compressed'] ?? false;
+    private function embedScript(string $name, array $vars = null, array $flags = []): void {
+        $path = in_array('path', $flags) ? "$this->root/$name" : "$this->scripts/$name.js";
+        $anonymous = in_array('anonymous', $flags);
+        $compress = in_array('compressed', $flags);
         $new_line = $compress ? '' : PHP_EOL;
 
         if (!file_exists($path)) {
-            echo "<!-- script \"$name.js\" does not exist -->";
+            echo "<!-- script \"$name\" does not exist -->";
             return;
         }
 
